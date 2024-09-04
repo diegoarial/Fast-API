@@ -22,7 +22,15 @@ COPY ./scripts/ /app/
 COPY ./alembic.ini /app/
 
 COPY ./prestart.sh /app/
-
 COPY ./tests-start.sh /app/
 
+# Migrações serão aplicadas no início
+COPY ./alembic /app/alembic
+
 COPY ./app /app/app
+
+# Expor a porta 80 para acessar a aplicação
+EXPOSE 80
+
+# Comando para iniciar o servidor
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]

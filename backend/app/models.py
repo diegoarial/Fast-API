@@ -43,7 +43,8 @@ class UpdatePassword(SQLModel):
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
-    items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
+    items: list["Item"] = Relationship(back_populates="owner", cascade="all, delete")
+    products: list["Product"] = Relationship(back_populates="owner", cascade="all, delete")
 
 
 # Properties to return via API, id is always required
@@ -112,3 +113,40 @@ class TokenPayload(SQLModel):
 class NewPassword(SQLModel):
     token: str
     new_password: str = Field(min_length=8, max_length=40)
+
+# Shared properties for Product
+class ProductBase(SQLModel):
+    name: str = Field(max_length=255, nullable=False)
+    description: str | None = Field(default=None, max_length=255)
+    price: float = Field(gt=0, nullable=False)
+    quantity: int = Field(ge=0, default=0, nullable=False)
+
+
+# Properties to receive on product creation
+class ProductCreate(ProductBase):
+    pass
+
+
+# Properties to receive on product update
+class ProductUpdate(ProductBase):
+    name: str | None = Field(default=None, max_length=255)  # type: ignore
+    price: float | None = Field(default=None, gt=0)  # type: ignore
+    quantity: int | None = Field(default=None, ge=0)  # type: ignore
+
+
+# Database model for Product
+class Product(ProductBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner_id: uuid.UUID = Field(foreign_key="user.id", nullable=False)
+    owner: User | None = Relationship(back_populates="products")
+
+
+# Properties to return via API
+class ProductPublic(ProductBase):
+    id: uuid.UUID
+    owner_id: uuid.UUID
+
+
+class ProductsPublic(SQLModel):
+    data: list[ProductPublic]
+    count: int
