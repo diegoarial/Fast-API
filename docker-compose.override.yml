@@ -7,7 +7,7 @@ services:
     ports:
       - "80:80"
       - "8090:8080"
-    # Duplicate the command from docker-compose.yml to add --api.insecure=true
+    # Duplicate the command from docker-compose.yml to add --api.insecur=true
     command:
       # Enable Docker in Traefik, so that it reads labels from Docker services
       - --providers.docker

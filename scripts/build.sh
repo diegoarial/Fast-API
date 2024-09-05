@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#! /usr/bin/envsh
 
 # Exit in case of error
 set -e
