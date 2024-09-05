@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#easter egg
 
 # Exit in case of error
 set -e
